@@ -3,9 +3,9 @@ on: [push, pull_request]
 
 jobs:
   trivy:
-    # Update <ORG> and <TEMPLATE_REPO> to your organization and template repo (e.g. myorg/org-actions).
+    # Update `myorg` and `org-actions` to your organization and template repo.
     # Use a released tag (recommended) like @v1 or use @main. Do NOT pass a secret named GITHUB_TOKEN.
     # Example: uses: myorg/org-actions/.github/workflows/trivy-scan-reusable.yml@v1
-    uses: <ORG>/<TEMPLATE_REPO>/.github/workflows/trivy-scan-reusable.yml@v1
+    uses: myorg/org-actions/.github/workflows/trivy-scan-reusable.yml@v1
     with:
       path: '.'
