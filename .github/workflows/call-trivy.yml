@@ -1,0 +1,8 @@
+name: Trivy (org template)
+on: [push, pull_request]
+
+jobs:
+  trivy:
+    uses: <ORG>/<TEMPLATE_REPO>/.github/workflows/trivy-scan-reusable.yml@v1
+    with:
+      path: '.'
