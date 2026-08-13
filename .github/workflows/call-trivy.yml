@@ -3,9 +3,9 @@ on: [push, pull_request]
 
 jobs:
   trivy:
-    # Update `myorg` and `org-actions` to your organization and template repo.
+    # Reference the reusable workflow in the OpsVision-Infrastructure repo in this org.
     # Use a released tag (recommended) like @v1 or use @main. Do NOT pass a secret named GITHUB_TOKEN.
-    # Example: uses: myorg/org-actions/.github/workflows/trivy-scan-reusable.yml@v1
-    uses: myorg/org-actions/.github/workflows/trivy-scan-reusable.yml@v1
+    # Example: uses: Ops-Vision/OpsVision-Infrastructure/.github/workflows/trivy-scan-reusable.yml@v1
+    uses: Ops-Vision/OpsVision-Infrastructure/.github/workflows/trivy-scan-reusable.yml@main
     with:
       path: '.'

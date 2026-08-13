@@ -5,7 +5,7 @@ Options
 
 1) Central templates repo (recommended)
 - Create a repo in your org (example `org-actions` or `.github`) and commit the reusable workflow into `.github/workflows/trivy-scan-reusable.yml` and tag a release `v1`.
-- Add the lightweight caller workflow to each repo: `.github/workflows/call-trivy.yml` (example included in this repo).
+- Add the lightweight caller workflow to each repo: `.github/workflows/call-trivy.yml` (example included in this repo). In this organization we use `Ops-Vision/OpsVision-Infrastructure` as the template source.
 
 2) Use this repository as the template source
 - Repositories can reference the reusable workflow here:
