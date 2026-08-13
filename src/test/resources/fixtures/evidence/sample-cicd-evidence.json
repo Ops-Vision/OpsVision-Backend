@@ -1,0 +1,92 @@
+{
+  "evidence": [
+    {
+      "evidenceType": "BUILD",
+      "status": "PASSED",
+      "source": "github-actions",
+      "summary": "Maven build completed successfully",
+      "rawReference": "artifacts/build-log.txt",
+      "collectedAt": "2026-03-01T12:00:00Z",
+      "findings": []
+    },
+    {
+      "evidenceType": "TEST",
+      "status": "PASSED",
+      "source": "junit",
+      "summary": "142 tests passed",
+      "metricValue": 142,
+      "metricUnit": "tests",
+      "rawReference": "artifacts/test-results.xml",
+      "collectedAt": "2026-03-01T12:05:00Z",
+      "findings": []
+    },
+    {
+      "evidenceType": "CODE_COVERAGE",
+      "status": "PASSED",
+      "source": "jacoco",
+      "summary": "Line coverage 84.5%",
+      "metricValue": 84.5,
+      "metricUnit": "percent",
+      "rawReference": "artifacts/jacoco.csv",
+      "collectedAt": "2026-03-01T12:06:00Z",
+      "findings": []
+    },
+    {
+      "evidenceType": "STATIC_ANALYSIS",
+      "status": "WARNING",
+      "source": "semgrep",
+      "summary": "1 medium severity finding",
+      "rawReference": "artifacts/semgrep.json",
+      "collectedAt": "2026-03-01T12:07:00Z",
+      "findings": [
+        {
+          "findingType": "STATIC_ANALYSIS",
+          "severity": "MEDIUM",
+          "ruleId": "java.lang.security.audit.sqli",
+          "title": "Possible SQL injection",
+          "description": "User input concatenated into SQL query",
+          "filePath": "src/main/java/com/acme/Dao.java",
+          "lineNumber": 42
+        }
+      ]
+    },
+    {
+      "evidenceType": "CONTAINER_SCAN",
+      "status": "WARNING",
+      "source": "trivy",
+      "summary": "1 high severity vulnerability",
+      "rawReference": "artifacts/trivy.json",
+      "collectedAt": "2026-03-01T12:08:00Z",
+      "findings": [
+        {
+          "findingType": "CONTAINER",
+          "severity": "HIGH",
+          "title": "CVE-2024-9999 in openssl",
+          "description": "OpenSSL vulnerability in base image",
+          "packageName": "openssl",
+          "installedVersion": "1.1.1",
+          "fixedVersion": "1.1.1w",
+          "externalId": "CVE-2024-9999"
+        }
+      ]
+    },
+    {
+      "evidenceType": "DEPENDENCY_SCAN",
+      "status": "PASSED",
+      "source": "trivy-fs",
+      "summary": "No vulnerable dependencies",
+      "rawReference": "artifacts/trivy-fs.json",
+      "collectedAt": "2026-03-01T12:09:00Z",
+      "findings": []
+    },
+    {
+      "evidenceType": "WORKFLOW",
+      "status": "PASSED",
+      "source": "github-actions",
+      "summary": "Workflow CI completed successfully",
+      "rawReference": "https://github.com/acme/payments/actions/runs/99",
+      "collectedAt": "2026-03-01T12:10:00Z",
+      "findings": []
+    }
+  ]
+}
