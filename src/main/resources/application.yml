@@ -39,6 +39,15 @@ info:
     name: ${spring.application.name}
     description: OpsVision AI Deployment Intelligence & Recovery backend
 
+opsvision:
+  github:
+    token: ${GITHUB_API_TOKEN:}
+    owner: ${GITHUB_OWNER:}
+    repository: ${GITHUB_REPOSITORY:}
+    api-base-url: ${GITHUB_API_BASE_URL:https://api.github.com}
+    connect-timeout-ms: ${GITHUB_CONNECT_TIMEOUT_MS:5000}
+    read-timeout-ms: ${GITHUB_READ_TIMEOUT_MS:15000}
+
 logging:
   level:
     root: INFO
