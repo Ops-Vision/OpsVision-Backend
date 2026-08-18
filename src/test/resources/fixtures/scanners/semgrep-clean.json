@@ -1,0 +1,8 @@
+{
+  "version": "1.45.0",
+  "results": [],
+  "errors": [],
+  "paths": {
+    "scanned": ["src/main/java/com/acme/App.java"]
+  }
+}

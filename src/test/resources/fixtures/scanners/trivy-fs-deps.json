@@ -1,0 +1,23 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": ".",
+  "ArtifactType": "filesystem",
+  "Results": [
+    {
+      "Target": "pom.xml",
+      "Class": "lang-pkgs",
+      "Type": "pom",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2022-45047",
+          "PkgName": "org.apache.sshd:sshd-common",
+          "InstalledVersion": "2.7.0",
+          "FixedVersion": "2.9.2",
+          "Severity": "CRITICAL",
+          "Title": "Apache MINA SSHD: Java unsafe deserialization",
+          "Description": "Unsafe deserialization vulnerability"
+        }
+      ]
+    }
+  ]
+}

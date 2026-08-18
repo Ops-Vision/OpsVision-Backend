@@ -1,0 +1,32 @@
+{
+  "version": "1.45.0",
+  "results": [
+    {
+      "check_id": "java.lang.security.audit.sqli.jdbc-sqli",
+      "path": "src/main/java/com/acme/Dao.java",
+      "start": { "line": 42, "col": 12 },
+      "end": { "line": 42, "col": 80 },
+      "extra": {
+        "message": "User input concatenated into SQL query",
+        "severity": "WARNING",
+        "metadata": {
+          "category": "security"
+        }
+      }
+    },
+    {
+      "check_id": "java.lang.security.audit.xss.no-direct-response-writer",
+      "path": "src/main/java/com/acme/WebController.java",
+      "start": { "line": 18, "col": 9 },
+      "end": { "line": 18, "col": 40 },
+      "extra": {
+        "message": "Possible XSS via direct response writer",
+        "severity": "ERROR"
+      }
+    }
+  ],
+  "errors": [],
+  "paths": {
+    "scanned": ["src/main/java/com/acme/Dao.java", "src/main/java/com/acme/WebController.java"]
+  }
+}

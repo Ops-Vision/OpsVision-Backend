@@ -1,0 +1,32 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "opsvision-backend:latest",
+  "ArtifactType": "container_image",
+  "Results": [
+    {
+      "Target": "opsvision-backend:latest (alpine 3.19.1)",
+      "Class": "os-pkgs",
+      "Type": "alpine",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2024-9999",
+          "PkgName": "openssl",
+          "InstalledVersion": "3.1.4-r5",
+          "FixedVersion": "3.1.4-r6",
+          "Severity": "HIGH",
+          "Title": "openssl: crafted certificate chain can cause denial of service",
+          "Description": "OpenSSL vulnerability in base image"
+        },
+        {
+          "VulnerabilityID": "CVE-2023-1111",
+          "PkgName": "musl",
+          "InstalledVersion": "1.2.4-r2",
+          "FixedVersion": "1.2.4-r3",
+          "Severity": "MEDIUM",
+          "Title": "musl: moderate issue",
+          "Description": "Example medium severity OS package issue"
+        }
+      ]
+    }
+  ]
+}

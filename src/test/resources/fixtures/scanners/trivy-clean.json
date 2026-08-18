@@ -1,0 +1,12 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "opsvision-backend:latest",
+  "ArtifactType": "container_image",
+  "Results": [
+    {
+      "Target": "opsvision-backend:latest (alpine 3.19.1)",
+      "Class": "os-pkgs",
+      "Type": "alpine"
+    }
+  ]
+}
