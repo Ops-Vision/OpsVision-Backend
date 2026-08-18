@@ -1,0 +1,56 @@
+{
+  "owner": "opsvision",
+  "repository": "demo-app",
+  "commitSha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "branch": "main",
+  "environment": "staging",
+  "workflowName": "ci.yml",
+  "workflowRunId": 9002,
+  "workflowRunUrl": "https://github.com/opsvision/demo-app/actions/runs/9002",
+  "repositoryUrl": "https://github.com/opsvision/demo-app",
+  "evidence": [
+    {
+      "evidenceType": "BUILD",
+      "status": "FAILED",
+      "source": "ci",
+      "summary": "Build failed on main",
+      "collectedAt": "2026-08-18T12:05:00Z"
+    },
+    {
+      "evidenceType": "TEST",
+      "status": "PASSED",
+      "source": "ci",
+      "summary": "Unit tests passed",
+      "collectedAt": "2026-08-18T12:05:00Z"
+    },
+    {
+      "evidenceType": "CODE_COVERAGE",
+      "status": "WARNING",
+      "source": "jacoco",
+      "summary": "Line coverage 55%",
+      "metricValue": 55.0,
+      "metricUnit": "percent",
+      "collectedAt": "2026-08-18T12:05:00Z"
+    },
+    {
+      "evidenceType": "CONTAINER_SCAN",
+      "status": "FAILED",
+      "source": "trivy",
+      "summary": "Critical CVE in base image",
+      "collectedAt": "2026-08-18T12:05:00Z",
+      "findings": [
+        {
+          "findingType": "CONTAINER",
+          "severity": "CRITICAL",
+          "ruleId": "CVE-2024-0001",
+          "title": "Critical container vulnerability",
+          "description": "Remote code execution in openssl",
+          "packageName": "openssl",
+          "installedVersion": "1.0.0",
+          "fixedVersion": "1.1.0",
+          "externalId": "CVE-2024-0001"
+        }
+      ]
+    }
+  ]
+}

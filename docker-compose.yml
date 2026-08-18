@@ -1,0 +1,53 @@
+# Local demo stack: Postgres (+ optional backend).
+# Usage:
+#   docker compose up -d postgres
+#   mvn spring-boot:run
+# Full stack:
+#   docker compose up -d --build
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: opsvision-postgres
+    environment:
+      POSTGRES_DB: opsvision
+      POSTGRES_USER: opsvision
+      POSTGRES_PASSWORD: opsvision
+    ports:
+      - "5432:5432"
+    volumes:
+      - opsvision_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U opsvision -d opsvision"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: .
+    container_name: opsvision-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      SERVER_PORT: "8080"
+      DB_URL: jdbc:postgresql://postgres:5432/opsvision
+      DB_USERNAME: opsvision
+      DB_PASSWORD: opsvision
+      # Optional demo integrations (leave empty for offline demo):
+      GITHUB_API_TOKEN: ${GITHUB_API_TOKEN:-}
+      GITHUB_OWNER: ${GITHUB_OWNER:-}
+      GITHUB_REPOSITORY: ${GITHUB_REPOSITORY:-}
+      OPSVISION_AI_ENABLED: ${OPSVISION_AI_ENABLED:-false}
+      OPSVISION_AI_PROVIDER: ${OPSVISION_AI_PROVIDER:-none}
+      OPSVISION_AI_BASE_URL: ${OPSVISION_AI_BASE_URL:-https://api.openai.com/v1}
+      OPSVISION_AI_API_KEY: ${OPSVISION_AI_API_KEY:-}
+      OPSVISION_AI_MODEL: ${OPSVISION_AI_MODEL:-gpt-4o-mini}
+      OPSVISION_OBSERVABILITY_ENABLED: ${OPSVISION_OBSERVABILITY_ENABLED:-false}
+    profiles:
+      - full
+
+volumes:
+  opsvision_pg_data:

@@ -1,0 +1,57 @@
+{
+  "owner": "opsvision",
+  "repository": "demo-app",
+  "commitSha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "branch": "main",
+  "environment": "staging",
+  "workflowName": "ci.yml",
+  "workflowRunId": 9001,
+  "workflowRunUrl": "https://github.com/opsvision/demo-app/actions/runs/9001",
+  "repositoryUrl": "https://github.com/opsvision/demo-app",
+  "evidence": [
+    {
+      "evidenceType": "BUILD",
+      "status": "PASSED",
+      "source": "ci",
+      "summary": "Build succeeded",
+      "collectedAt": "2026-08-18T12:00:00Z"
+    },
+    {
+      "evidenceType": "TEST",
+      "status": "PASSED",
+      "source": "ci",
+      "summary": "All tests passed",
+      "collectedAt": "2026-08-18T12:00:00Z"
+    },
+    {
+      "evidenceType": "WORKFLOW",
+      "status": "PASSED",
+      "source": "github-actions",
+      "summary": "Workflow completed successfully",
+      "collectedAt": "2026-08-18T12:00:00Z"
+    },
+    {
+      "evidenceType": "CODE_COVERAGE",
+      "status": "PASSED",
+      "source": "jacoco",
+      "summary": "Line coverage 92%",
+      "metricValue": 92.0,
+      "metricUnit": "percent",
+      "collectedAt": "2026-08-18T12:00:00Z"
+    },
+    {
+      "evidenceType": "STATIC_ANALYSIS",
+      "status": "PASSED",
+      "source": "semgrep",
+      "summary": "No blocking findings",
+      "collectedAt": "2026-08-18T12:00:00Z"
+    },
+    {
+      "evidenceType": "CONTAINER_SCAN",
+      "status": "PASSED",
+      "source": "trivy",
+      "summary": "No critical or high vulnerabilities",
+      "collectedAt": "2026-08-18T12:00:00Z"
+    }
+  ]
+}
