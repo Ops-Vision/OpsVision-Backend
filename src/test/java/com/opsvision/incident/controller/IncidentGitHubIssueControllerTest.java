@@ -7,6 +7,8 @@ import com.opsvision.incident.exception.IncidentNotFoundException;
 import com.opsvision.incident.mapper.IncidentMapper;
 import com.opsvision.incident.service.IncidentDetectionService;
 import com.opsvision.incident.service.RootCauseAnalysisService;
+import com.opsvision.postmortem.mapper.PostmortemMapper;
+import com.opsvision.postmortem.service.PostmortemService;
 import com.opsvision.recovery.mapper.RecoveryMapper;
 import com.opsvision.recovery.service.RecoveryRecommendationService;
 import org.junit.jupiter.api.Test;
@@ -25,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = IncidentController.class)
-@Import({IncidentMapper.class, RecoveryMapper.class, GlobalExceptionHandler.class})
+@Import({IncidentMapper.class, RecoveryMapper.class, PostmortemMapper.class, GlobalExceptionHandler.class})
 class IncidentGitHubIssueControllerTest {
 
     @Autowired
@@ -42,6 +44,9 @@ class IncidentGitHubIssueControllerTest {
 
     @MockBean
     private IncidentGitHubIssueService incidentGitHubIssueService;
+
+    @MockBean
+    private PostmortemService postmortemService;
 
     @Test
     void createGitHubIssue_returnsBody() throws Exception {

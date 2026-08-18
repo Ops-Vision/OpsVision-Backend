@@ -8,6 +8,9 @@ import com.opsvision.incident.dto.RootCauseAnalysisResponse;
 import com.opsvision.incident.mapper.IncidentMapper;
 import com.opsvision.incident.service.IncidentDetectionService;
 import com.opsvision.incident.service.RootCauseAnalysisService;
+import com.opsvision.postmortem.dto.PostmortemResponse;
+import com.opsvision.postmortem.mapper.PostmortemMapper;
+import com.opsvision.postmortem.service.PostmortemService;
 import com.opsvision.recovery.dto.RecoveryRecommendationResponse;
 import com.opsvision.recovery.mapper.RecoveryMapper;
 import com.opsvision.recovery.service.RecoveryRecommendationService;
@@ -30,30 +33,36 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path = "/api/v1/incidents", produces = MediaType.APPLICATION_JSON_VALUE)
-@Tag(name = "Incidents", description = "Incident detection, timeline, RCA, recovery, and GitHub issues")
+@Tag(name = "Incidents", description = "Incident detection, timeline, RCA, recovery, postmortems, and GitHub issues")
 public class IncidentController {
 
     private final IncidentDetectionService incidentDetectionService;
     private final RootCauseAnalysisService rootCauseAnalysisService;
     private final RecoveryRecommendationService recoveryRecommendationService;
     private final IncidentGitHubIssueService incidentGitHubIssueService;
+    private final PostmortemService postmortemService;
     private final IncidentMapper incidentMapper;
     private final RecoveryMapper recoveryMapper;
+    private final PostmortemMapper postmortemMapper;
 
     public IncidentController(
             IncidentDetectionService incidentDetectionService,
             RootCauseAnalysisService rootCauseAnalysisService,
             RecoveryRecommendationService recoveryRecommendationService,
             IncidentGitHubIssueService incidentGitHubIssueService,
+            PostmortemService postmortemService,
             IncidentMapper incidentMapper,
-            RecoveryMapper recoveryMapper
+            RecoveryMapper recoveryMapper,
+            PostmortemMapper postmortemMapper
     ) {
         this.incidentDetectionService = incidentDetectionService;
         this.rootCauseAnalysisService = rootCauseAnalysisService;
         this.recoveryRecommendationService = recoveryRecommendationService;
         this.incidentGitHubIssueService = incidentGitHubIssueService;
+        this.postmortemService = postmortemService;
         this.incidentMapper = incidentMapper;
         this.recoveryMapper = recoveryMapper;
+        this.postmortemMapper = postmortemMapper;
     }
 
     @PostMapping("/detect")
@@ -110,5 +119,11 @@ public class IncidentController {
     @Operation(summary = "Create a GitHub issue for the incident (idempotent; prevents duplicates)")
     public IncidentGitHubIssueResponse createGitHubIssue(@PathVariable Long id) {
         return incidentGitHubIssueService.createOrGetIssue(id);
+    }
+
+    @GetMapping("/{id}/postmortem")
+    @Operation(summary = "Generate a blameless postmortem draft from incident, RCA, and recovery data")
+    public PostmortemResponse generatePostmortem(@PathVariable Long id) {
+        return postmortemMapper.toResponse(postmortemService.generate(id));
     }
 }

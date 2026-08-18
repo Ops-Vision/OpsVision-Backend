@@ -7,6 +7,8 @@ import com.opsvision.incident.mapper.IncidentMapper;
 import com.opsvision.incident.model.IncidentSeverity;
 import com.opsvision.incident.service.IncidentDetectionService;
 import com.opsvision.incident.service.RootCauseAnalysisService;
+import com.opsvision.postmortem.mapper.PostmortemMapper;
+import com.opsvision.postmortem.service.PostmortemService;
 import com.opsvision.recovery.mapper.RecoveryMapper;
 import com.opsvision.recovery.service.RecoveryRecommendationService;
 import com.opsvision.common.exception.GlobalExceptionHandler;
@@ -34,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = IncidentController.class)
-@Import({IncidentMapper.class, RecoveryMapper.class, GlobalExceptionHandler.class})
+@Import({IncidentMapper.class, RecoveryMapper.class, PostmortemMapper.class, GlobalExceptionHandler.class})
 class IncidentControllerTest {
 
     @Autowired
@@ -51,6 +53,9 @@ class IncidentControllerTest {
 
     @MockBean
     private IncidentGitHubIssueService incidentGitHubIssueService;
+
+    @MockBean
+    private PostmortemService postmortemService;
 
     @Test
     void detect_noIncident_returnsFlagFalse() throws Exception {
