@@ -110,6 +110,14 @@ opsvision:
       cpu-query: ${OPSVISION_PROMETHEUS_CPU_QUERY:}
       memory-query: ${OPSVISION_PROMETHEUS_MEMORY_QUERY:}
       availability-query: ${OPSVISION_PROMETHEUS_AVAILABILITY_QUERY:}
+  incident:
+    error-ratio-threshold: ${OPSVISION_INCIDENT_ERROR_RATIO_THRESHOLD:0.05}
+    error-rate-threshold: ${OPSVISION_INCIDENT_ERROR_RATE_THRESHOLD:1.0}
+    availability-min-ratio: ${OPSVISION_INCIDENT_AVAILABILITY_MIN:0.95}
+    pod-restart-threshold: ${OPSVISION_INCIDENT_POD_RESTART_THRESHOLD:3}
+    warning-event-threshold: ${OPSVISION_INCIDENT_WARNING_EVENT_THRESHOLD:1}
+    detect-unhealthy-workload: ${OPSVISION_INCIDENT_DETECT_UNHEALTHY_WORKLOAD:true}
+    require-telemetry: ${OPSVISION_INCIDENT_REQUIRE_TELEMETRY:true}
 
 logging:
   level:

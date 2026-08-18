@@ -1,0 +1,74 @@
+package com.opsvision.incident.controller;
+
+import com.opsvision.incident.dto.IncidentDetectionResponse;
+import com.opsvision.incident.dto.IncidentResponse;
+import com.opsvision.incident.mapper.IncidentMapper;
+import com.opsvision.incident.service.IncidentDetectionService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+@RequestMapping(path = "/api/v1/incidents", produces = MediaType.APPLICATION_JSON_VALUE)
+@Tag(name = "Incidents", description = "Incident detection and timeline")
+public class IncidentController {
+
+    private final IncidentDetectionService incidentDetectionService;
+    private final IncidentMapper incidentMapper;
+
+    public IncidentController(
+            IncidentDetectionService incidentDetectionService,
+            IncidentMapper incidentMapper
+    ) {
+        this.incidentDetectionService = incidentDetectionService;
+        this.incidentMapper = incidentMapper;
+    }
+
+    @PostMapping("/detect")
+    @Operation(summary = "Collect telemetry and detect an incident with correlated timeline")
+    public IncidentDetectionResponse detect(
+            @RequestParam(required = false) Long deploymentId,
+            @RequestParam(required = false) String namespace,
+            @RequestParam(required = false) String workload
+    ) {
+        return incidentDetectionService.detectFromLiveTelemetry(deploymentId, namespace, workload)
+                .map(incidentMapper::toResponse)
+                .map(IncidentDetectionResponse::of)
+                .orElseGet(() -> IncidentDetectionResponse.none(
+                        "No incident-worthy signals in current telemetry"
+                ));
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Get incident by id including timeline")
+    public IncidentResponse getById(@PathVariable Long id) {
+        return incidentMapper.toResponse(incidentDetectionService.getById(id));
+    }
+
+    @GetMapping
+    @Operation(summary = "List recent incidents")
+    public Page<IncidentResponse> list(
+            @PageableDefault(size = 20) Pageable pageable
+    ) {
+        return incidentDetectionService.list(pageable).map(incidentMapper::toResponse);
+    }
+
+    @GetMapping("/by-deployment/{deploymentId}")
+    @Operation(summary = "List incidents linked to a deployment")
+    public List<IncidentResponse> byDeployment(@PathVariable Long deploymentId) {
+        return incidentDetectionService.listByDeployment(deploymentId).stream()
+                .map(incidentMapper::toResponse)
+                .toList();
+    }
+}

@@ -2,6 +2,7 @@ package com.opsvision.common.exception;
 
 import com.opsvision.ai.exception.AiProviderException;
 import com.opsvision.evidence.exception.DeploymentNotFoundException;
+import com.opsvision.incident.exception.IncidentNotFoundException;
 import com.opsvision.observability.exception.ObservabilityException;
 import com.opsvision.evidence.exception.EvidenceIngestionException;
 import com.opsvision.github.exception.GitHubAuthenticationException;
@@ -40,6 +41,16 @@ public class GlobalExceptionHandler {
     ) {
         return problem(HttpStatus.NOT_FOUND, "Deployment Not Found", ex.getMessage(), request, Map.of(
                 "deploymentId", ex.getDeploymentId()
+        ));
+    }
+
+    @ExceptionHandler(IncidentNotFoundException.class)
+    public ResponseEntity<ProblemDetail> handleIncidentNotFound(
+            IncidentNotFoundException ex,
+            HttpServletRequest request
+    ) {
+        return problem(HttpStatus.NOT_FOUND, "Incident Not Found", ex.getMessage(), request, Map.of(
+                "incidentId", ex.getIncidentId()
         ));
     }
 
