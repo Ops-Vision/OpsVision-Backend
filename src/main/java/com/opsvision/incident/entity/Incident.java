@@ -75,6 +75,15 @@ public class Incident {
     @Column(name = "resolved_at")
     private Instant resolvedAt;
 
+    @Column(name = "github_issue_number")
+    private Long githubIssueNumber;
+
+    @Column(name = "github_issue_url", length = 512)
+    private String githubIssueUrl;
+
+    @Column(name = "github_issue_created_at")
+    private Instant githubIssueCreatedAt;
+
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
@@ -206,6 +215,30 @@ public class Incident {
 
     public void setEnvironment(String environment) {
         this.environment = environment;
+    }
+
+    public Long getGithubIssueNumber() {
+        return githubIssueNumber;
+    }
+
+    public void setGithubIssueNumber(Long githubIssueNumber) {
+        this.githubIssueNumber = githubIssueNumber;
+    }
+
+    public String getGithubIssueUrl() {
+        return githubIssueUrl;
+    }
+
+    public void setGithubIssueUrl(String githubIssueUrl) {
+        this.githubIssueUrl = githubIssueUrl;
+    }
+
+    public Instant getGithubIssueCreatedAt() {
+        return githubIssueCreatedAt;
+    }
+
+    public void setGithubIssueCreatedAt(Instant githubIssueCreatedAt) {
+        this.githubIssueCreatedAt = githubIssueCreatedAt;
     }
 
     public Instant getDetectedAt() {

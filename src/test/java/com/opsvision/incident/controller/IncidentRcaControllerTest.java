@@ -1,6 +1,7 @@
 package com.opsvision.incident.controller;
 
 import com.opsvision.common.exception.GlobalExceptionHandler;
+import com.opsvision.github.service.IncidentGitHubIssueService;
 import com.opsvision.incident.exception.IncidentNotFoundException;
 import com.opsvision.incident.mapper.IncidentMapper;
 import com.opsvision.incident.model.ProbableCause;
@@ -40,6 +41,9 @@ class IncidentRcaControllerTest {
 
     @MockBean
     private RecoveryRecommendationService recoveryRecommendationService;
+
+    @MockBean
+    private IncidentGitHubIssueService incidentGitHubIssueService;
 
     @Test
     void rca_returnsRankedCauses() throws Exception {

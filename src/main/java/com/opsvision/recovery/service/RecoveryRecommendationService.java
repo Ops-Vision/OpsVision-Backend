@@ -55,9 +55,9 @@ public class RecoveryRecommendationService {
     }
 
     /**
-     * Package-visible for unit tests without full Spring wiring.
+     * Shared entry for callers that already hold RCA (tests, GitHub issue automation).
      */
-    RecoveryRecommendationResult recommendFrom(Incident incident, RootCauseAnalysisResult rca) {
+    public RecoveryRecommendationResult recommendFrom(Incident incident, RootCauseAnalysisResult rca) {
         Objects.requireNonNull(incident, "incident");
         Objects.requireNonNull(rca, "rca");
         Instant now = Instant.now();

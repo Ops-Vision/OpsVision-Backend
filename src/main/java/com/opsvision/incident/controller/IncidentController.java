@@ -1,5 +1,7 @@
 package com.opsvision.incident.controller;
 
+import com.opsvision.github.dto.IncidentGitHubIssueResponse;
+import com.opsvision.github.service.IncidentGitHubIssueService;
 import com.opsvision.incident.dto.IncidentDetectionResponse;
 import com.opsvision.incident.dto.IncidentResponse;
 import com.opsvision.incident.dto.RootCauseAnalysisResponse;
@@ -14,24 +16,27 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
 @RequestMapping(path = "/api/v1/incidents", produces = MediaType.APPLICATION_JSON_VALUE)
-@Tag(name = "Incidents", description = "Incident detection, timeline, RCA, and recovery recommendations")
+@Tag(name = "Incidents", description = "Incident detection, timeline, RCA, recovery, and GitHub issues")
 public class IncidentController {
 
     private final IncidentDetectionService incidentDetectionService;
     private final RootCauseAnalysisService rootCauseAnalysisService;
     private final RecoveryRecommendationService recoveryRecommendationService;
+    private final IncidentGitHubIssueService incidentGitHubIssueService;
     private final IncidentMapper incidentMapper;
     private final RecoveryMapper recoveryMapper;
 
@@ -39,12 +44,14 @@ public class IncidentController {
             IncidentDetectionService incidentDetectionService,
             RootCauseAnalysisService rootCauseAnalysisService,
             RecoveryRecommendationService recoveryRecommendationService,
+            IncidentGitHubIssueService incidentGitHubIssueService,
             IncidentMapper incidentMapper,
             RecoveryMapper recoveryMapper
     ) {
         this.incidentDetectionService = incidentDetectionService;
         this.rootCauseAnalysisService = rootCauseAnalysisService;
         this.recoveryRecommendationService = recoveryRecommendationService;
+        this.incidentGitHubIssueService = incidentGitHubIssueService;
         this.incidentMapper = incidentMapper;
         this.recoveryMapper = recoveryMapper;
     }
@@ -96,5 +103,12 @@ public class IncidentController {
     @Operation(summary = "Recommend recovery action (recommendation only; does not execute)")
     public RecoveryRecommendationResponse recommendRecovery(@PathVariable Long id) {
         return recoveryMapper.toResponse(recoveryRecommendationService.recommend(id));
+    }
+
+    @PostMapping("/{id}/github-issue")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Create a GitHub issue for the incident (idempotent; prevents duplicates)")
+    public IncidentGitHubIssueResponse createGitHubIssue(@PathVariable Long id) {
+        return incidentGitHubIssueService.createOrGetIssue(id);
     }
 }

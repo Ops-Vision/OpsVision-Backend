@@ -1,5 +1,6 @@
 package com.opsvision.incident.controller;
 
+import com.opsvision.github.service.IncidentGitHubIssueService;
 import com.opsvision.incident.entity.Incident;
 import com.opsvision.incident.exception.IncidentNotFoundException;
 import com.opsvision.incident.mapper.IncidentMapper;
@@ -47,6 +48,9 @@ class IncidentControllerTest {
 
     @MockBean
     private RecoveryRecommendationService recoveryRecommendationService;
+
+    @MockBean
+    private IncidentGitHubIssueService incidentGitHubIssueService;
 
     @Test
     void detect_noIncident_returnsFlagFalse() throws Exception {

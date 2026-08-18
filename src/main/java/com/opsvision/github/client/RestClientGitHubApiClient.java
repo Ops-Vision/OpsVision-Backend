@@ -3,6 +3,9 @@ package com.opsvision.github.client;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opsvision.github.client.dto.GitHubCommitResponse;
+import com.opsvision.github.client.dto.GitHubIssueCreateRequest;
+import com.opsvision.github.client.dto.GitHubIssueResponse;
+import com.opsvision.github.client.dto.GitHubIssueSearchResponse;
 import com.opsvision.github.client.dto.GitHubPullRequestResponse;
 import com.opsvision.github.client.dto.GitHubRepositoryResponse;
 import com.opsvision.github.client.dto.GitHubWorkflowRunResponse;
@@ -126,6 +129,33 @@ public class RestClientGitHubApiClient implements GitHubApiClient {
         return get(
                 uri -> uri.path("/repos/{owner}/{repo}/actions/runs/{runId}").build(owner, repo, runId),
                 GitHubWorkflowRunResponse.class
+        );
+    }
+
+    @Override
+    public GitHubIssueResponse createIssue(String owner, String repo, GitHubIssueCreateRequest request) {
+        try {
+            ResponseEntity<GitHubIssueResponse> response = restClient.post()
+                    .uri(uri -> uri.path("/repos/{owner}/{repo}/issues").build(owner, repo))
+                    .body(request)
+                    .retrieve()
+                    .toEntity(GitHubIssueResponse.class);
+            return response.getBody();
+        } catch (RestClientResponseException ex) {
+            throw mapResponseException(ex);
+        } catch (RestClientException ex) {
+            throw new GitHubException("GitHub API request failed: " + ex.getMessage(), ex);
+        }
+    }
+
+    @Override
+    public GitHubIssueSearchResponse searchIssues(String query, int perPage) {
+        return get(
+                uri -> uri.path("/search/issues")
+                        .queryParam("q", query)
+                        .queryParam("per_page", clampPerPage(perPage))
+                        .build(),
+                GitHubIssueSearchResponse.class
         );
     }
 

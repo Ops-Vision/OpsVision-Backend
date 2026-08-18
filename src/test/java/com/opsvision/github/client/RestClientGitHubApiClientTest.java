@@ -2,6 +2,9 @@ package com.opsvision.github.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opsvision.github.client.dto.GitHubCommitResponse;
+import com.opsvision.github.client.dto.GitHubIssueCreateRequest;
+import com.opsvision.github.client.dto.GitHubIssueResponse;
+import com.opsvision.github.client.dto.GitHubIssueSearchResponse;
 import com.opsvision.github.client.dto.GitHubRepositoryResponse;
 import com.opsvision.github.client.dto.GitHubWorkflowRunResponse;
 import com.opsvision.github.client.dto.GitHubWorkflowRunsListResponse;
@@ -203,6 +206,63 @@ class RestClientGitHubApiClientTest {
         assertThatThrownBy(() -> client.getWorkflowRun("acme", "r", 1L))
                 .isInstanceOf(GitHubRateLimitException.class)
                 .hasMessageContaining("rate limit");
+        server.verify();
+    }
+
+    @Test
+    void createIssue_postsBodyAndMapsResponse() {
+        String body = """
+                {
+                  "id": 1,
+                  "number": 42,
+                  "title": "Incident",
+                  "state": "open",
+                  "html_url": "https://github.com/acme/r/issues/42",
+                  "body": "details"
+                }
+                """;
+        server.expect(requestTo(BASE + "/repos/acme/r/issues"))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withSuccess(body, MediaType.APPLICATION_JSON));
+
+        GitHubIssueResponse issue = client.createIssue(
+                "acme",
+                "r",
+                new GitHubIssueCreateRequest("Incident", "details", List.of("opsvision-incident"))
+        );
+
+        assertThat(issue.number()).isEqualTo(42);
+        assertThat(issue.htmlUrl()).contains("/issues/42");
+        server.verify();
+    }
+
+    @Test
+    void searchIssues_mapsItems() {
+        String body = """
+                {
+                  "total_count": 1,
+                  "incomplete_results": false,
+                  "items": [
+                    {
+                      "id": 9,
+                      "number": 3,
+                      "title": "found",
+                      "state": "open",
+                      "html_url": "https://github.com/acme/r/issues/3",
+                      "body": "opsvision-incident-id: 1"
+                    }
+                  ]
+                }
+                """;
+        server.expect(requestTo(BASE + "/search/issues?q=repo:acme/r%20marker&per_page=5"))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess(body, MediaType.APPLICATION_JSON));
+
+        GitHubIssueSearchResponse response = client.searchIssues("repo:acme/r marker", 5);
+
+        assertThat(response.totalCount()).isEqualTo(1);
+        assertThat(response.items()).hasSize(1);
+        assertThat(response.items().getFirst().number()).isEqualTo(3);
         server.verify();
     }
 }

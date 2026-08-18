@@ -14,7 +14,7 @@ import java.util.Optional;
 
 public interface IncidentRepository extends JpaRepository<Incident, Long> {
 
-    @EntityGraph(attributePaths = {"timelineEntries", "deployment"})
+    @EntityGraph(attributePaths = {"timelineEntries", "deployment", "deployment.repository"})
     @Query("select i from Incident i where i.id = :id")
     Optional<Incident> findByIdWithTimeline(@Param("id") Long id);
 

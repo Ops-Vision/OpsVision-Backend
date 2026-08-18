@@ -1,6 +1,9 @@
 package com.opsvision.github.client;
 
 import com.opsvision.github.client.dto.GitHubCommitResponse;
+import com.opsvision.github.client.dto.GitHubIssueCreateRequest;
+import com.opsvision.github.client.dto.GitHubIssueResponse;
+import com.opsvision.github.client.dto.GitHubIssueSearchResponse;
 import com.opsvision.github.client.dto.GitHubPullRequestResponse;
 import com.opsvision.github.client.dto.GitHubRepositoryResponse;
 import com.opsvision.github.client.dto.GitHubWorkflowRunResponse;
@@ -32,4 +35,14 @@ public interface GitHubApiClient {
     );
 
     GitHubWorkflowRunResponse getWorkflowRun(String owner, String repo, long runId);
+
+    /**
+     * Create an issue in the repository.
+     */
+    GitHubIssueResponse createIssue(String owner, String repo, GitHubIssueCreateRequest request);
+
+    /**
+     * Search issues (and PRs) via the GitHub search API.
+     */
+    GitHubIssueSearchResponse searchIssues(String query, int perPage);
 }
