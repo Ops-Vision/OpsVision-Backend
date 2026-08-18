@@ -2,6 +2,7 @@ package com.opsvision.common.exception;
 
 import com.opsvision.ai.exception.AiProviderException;
 import com.opsvision.evidence.exception.DeploymentNotFoundException;
+import com.opsvision.observability.exception.ObservabilityException;
 import com.opsvision.evidence.exception.EvidenceIngestionException;
 import com.opsvision.github.exception.GitHubAuthenticationException;
 import com.opsvision.github.exception.GitHubException;
@@ -134,6 +135,15 @@ public class GlobalExceptionHandler {
     ) {
         log.warn("AI provider error on {}: {}", request.getRequestURI(), ex.getMessage());
         return problem(HttpStatus.BAD_GATEWAY, "AI Provider Error", ex.getMessage(), request, Map.of());
+    }
+
+    @ExceptionHandler(ObservabilityException.class)
+    public ResponseEntity<ProblemDetail> handleObservability(
+            ObservabilityException ex,
+            HttpServletRequest request
+    ) {
+        log.warn("Observability error on {}: {}", request.getRequestURI(), ex.getMessage());
+        return problem(HttpStatus.BAD_GATEWAY, "Observability Error", ex.getMessage(), request, Map.of());
     }
 
     @ExceptionHandler(Exception.class)

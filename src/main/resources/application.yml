@@ -83,6 +83,33 @@ opsvision:
     read-timeout-ms: ${OPSVISION_AI_READ_TIMEOUT_MS:60000}
     max-tokens: ${OPSVISION_AI_MAX_TOKENS:800}
     temperature: ${OPSVISION_AI_TEMPERATURE:0.2}
+  observability:
+    enabled: ${OPSVISION_OBSERVABILITY_ENABLED:false}
+    kubernetes:
+      enabled: ${OPSVISION_K8S_ENABLED:true}
+      api-base-url: ${OPSVISION_K8S_API_BASE_URL:https://kubernetes.default.svc}
+      token: ${OPSVISION_K8S_TOKEN:}
+      default-namespace: ${OPSVISION_K8S_NAMESPACE:default}
+      default-workload: ${OPSVISION_K8S_WORKLOAD:}
+      connect-timeout-ms: ${OPSVISION_K8S_CONNECT_TIMEOUT_MS:5000}
+      read-timeout-ms: ${OPSVISION_K8S_READ_TIMEOUT_MS:15000}
+      insecure-skip-tls-verify: ${OPSVISION_K8S_INSECURE_SKIP_TLS:false}
+    prometheus:
+      enabled: ${OPSVISION_PROMETHEUS_ENABLED:true}
+      base-url: ${OPSVISION_PROMETHEUS_BASE_URL:http://localhost:9090}
+      connect-timeout-ms: ${OPSVISION_PROMETHEUS_CONNECT_TIMEOUT_MS:5000}
+      read-timeout-ms: ${OPSVISION_PROMETHEUS_READ_TIMEOUT_MS:15000}
+      # Label matcher, e.g. job="my-app" or app="opsvision"
+      service-selector: ${OPSVISION_PROMETHEUS_SERVICE_SELECTOR:}
+      request-rate-query: ${OPSVISION_PROMETHEUS_REQUEST_RATE_QUERY:}
+      error-rate-query: ${OPSVISION_PROMETHEUS_ERROR_RATE_QUERY:}
+      error-ratio-query: ${OPSVISION_PROMETHEUS_ERROR_RATIO_QUERY:}
+      latency-p50-query: ${OPSVISION_PROMETHEUS_LATENCY_P50_QUERY:}
+      latency-p95-query: ${OPSVISION_PROMETHEUS_LATENCY_P95_QUERY:}
+      latency-p99-query: ${OPSVISION_PROMETHEUS_LATENCY_P99_QUERY:}
+      cpu-query: ${OPSVISION_PROMETHEUS_CPU_QUERY:}
+      memory-query: ${OPSVISION_PROMETHEUS_MEMORY_QUERY:}
+      availability-query: ${OPSVISION_PROMETHEUS_AVAILABILITY_QUERY:}
 
 logging:
   level:
