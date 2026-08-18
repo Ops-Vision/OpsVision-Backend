@@ -58,6 +58,15 @@ opsvision:
     coverage-full-threshold: 80.0
     coverage-zero-threshold: 40.0
     missing-evidence-credit: 0.0
+  policy:
+    # Score bands: DEPLOY >= deploy-min-score, REVIEW >= review-min-score, else BLOCK
+    deploy-min-score: 80
+    review-min-score: 60
+    block-on-critical-finding: true
+    block-on-failed-build: true
+    block-on-failed-tests: true
+    block-on-failed-workflow: true
+    review-on-high-finding: true
 
 logging:
   level:
