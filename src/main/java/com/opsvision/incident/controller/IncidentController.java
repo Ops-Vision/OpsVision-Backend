@@ -2,8 +2,10 @@ package com.opsvision.incident.controller;
 
 import com.opsvision.incident.dto.IncidentDetectionResponse;
 import com.opsvision.incident.dto.IncidentResponse;
+import com.opsvision.incident.dto.RootCauseAnalysisResponse;
 import com.opsvision.incident.mapper.IncidentMapper;
 import com.opsvision.incident.service.IncidentDetectionService;
+import com.opsvision.incident.service.RootCauseAnalysisService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
@@ -21,17 +23,20 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path = "/api/v1/incidents", produces = MediaType.APPLICATION_JSON_VALUE)
-@Tag(name = "Incidents", description = "Incident detection and timeline")
+@Tag(name = "Incidents", description = "Incident detection, timeline, and root-cause analysis")
 public class IncidentController {
 
     private final IncidentDetectionService incidentDetectionService;
+    private final RootCauseAnalysisService rootCauseAnalysisService;
     private final IncidentMapper incidentMapper;
 
     public IncidentController(
             IncidentDetectionService incidentDetectionService,
+            RootCauseAnalysisService rootCauseAnalysisService,
             IncidentMapper incidentMapper
     ) {
         this.incidentDetectionService = incidentDetectionService;
+        this.rootCauseAnalysisService = rootCauseAnalysisService;
         this.incidentMapper = incidentMapper;
     }
 
@@ -70,5 +75,11 @@ public class IncidentController {
         return incidentDetectionService.listByDeployment(deploymentId).stream()
                 .map(incidentMapper::toResponse)
                 .toList();
+    }
+
+    @GetMapping("/{id}/rca")
+    @Operation(summary = "Run deterministic root-cause analysis for an incident")
+    public RootCauseAnalysisResponse analyzeRootCause(@PathVariable Long id) {
+        return incidentMapper.toRcaResponse(rootCauseAnalysisService.analyze(id));
     }
 }

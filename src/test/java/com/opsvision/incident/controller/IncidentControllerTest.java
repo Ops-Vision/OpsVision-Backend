@@ -5,6 +5,7 @@ import com.opsvision.incident.exception.IncidentNotFoundException;
 import com.opsvision.incident.mapper.IncidentMapper;
 import com.opsvision.incident.model.IncidentSeverity;
 import com.opsvision.incident.service.IncidentDetectionService;
+import com.opsvision.incident.service.RootCauseAnalysisService;
 import com.opsvision.common.exception.GlobalExceptionHandler;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,9 @@ class IncidentControllerTest {
 
     @MockBean
     private IncidentDetectionService incidentDetectionService;
+
+    @MockBean
+    private RootCauseAnalysisService rootCauseAnalysisService;
 
     @Test
     void detect_noIncident_returnsFlagFalse() throws Exception {
