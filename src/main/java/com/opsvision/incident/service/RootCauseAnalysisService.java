@@ -55,9 +55,9 @@ public class RootCauseAnalysisService {
     }
 
     /**
-     * Package-visible for unit tests without JPA.
+     * Analyze a loaded incident graph (timeline + optional deployment). Public for recovery and tests.
      */
-    RootCauseAnalysisResult analyzeIncident(Incident incident) {
+    public RootCauseAnalysisResult analyzeIncident(Incident incident) {
         Objects.requireNonNull(incident, "incident");
         Instant analyzedAt = Instant.now();
         List<IncidentTimelineEntry> timeline = incident.getTimelineEntries() != null

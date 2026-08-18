@@ -6,6 +6,9 @@ import com.opsvision.incident.dto.RootCauseAnalysisResponse;
 import com.opsvision.incident.mapper.IncidentMapper;
 import com.opsvision.incident.service.IncidentDetectionService;
 import com.opsvision.incident.service.RootCauseAnalysisService;
+import com.opsvision.recovery.dto.RecoveryRecommendationResponse;
+import com.opsvision.recovery.mapper.RecoveryMapper;
+import com.opsvision.recovery.service.RecoveryRecommendationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
@@ -23,21 +26,27 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path = "/api/v1/incidents", produces = MediaType.APPLICATION_JSON_VALUE)
-@Tag(name = "Incidents", description = "Incident detection, timeline, and root-cause analysis")
+@Tag(name = "Incidents", description = "Incident detection, timeline, RCA, and recovery recommendations")
 public class IncidentController {
 
     private final IncidentDetectionService incidentDetectionService;
     private final RootCauseAnalysisService rootCauseAnalysisService;
+    private final RecoveryRecommendationService recoveryRecommendationService;
     private final IncidentMapper incidentMapper;
+    private final RecoveryMapper recoveryMapper;
 
     public IncidentController(
             IncidentDetectionService incidentDetectionService,
             RootCauseAnalysisService rootCauseAnalysisService,
-            IncidentMapper incidentMapper
+            RecoveryRecommendationService recoveryRecommendationService,
+            IncidentMapper incidentMapper,
+            RecoveryMapper recoveryMapper
     ) {
         this.incidentDetectionService = incidentDetectionService;
         this.rootCauseAnalysisService = rootCauseAnalysisService;
+        this.recoveryRecommendationService = recoveryRecommendationService;
         this.incidentMapper = incidentMapper;
+        this.recoveryMapper = recoveryMapper;
     }
 
     @PostMapping("/detect")
@@ -81,5 +90,11 @@ public class IncidentController {
     @Operation(summary = "Run deterministic root-cause analysis for an incident")
     public RootCauseAnalysisResponse analyzeRootCause(@PathVariable Long id) {
         return incidentMapper.toRcaResponse(rootCauseAnalysisService.analyze(id));
+    }
+
+    @GetMapping("/{id}/recovery")
+    @Operation(summary = "Recommend recovery action (recommendation only; does not execute)")
+    public RecoveryRecommendationResponse recommendRecovery(@PathVariable Long id) {
+        return recoveryMapper.toResponse(recoveryRecommendationService.recommend(id));
     }
 }

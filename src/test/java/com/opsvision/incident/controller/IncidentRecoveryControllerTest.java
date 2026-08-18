@@ -3,11 +3,11 @@ package com.opsvision.incident.controller;
 import com.opsvision.common.exception.GlobalExceptionHandler;
 import com.opsvision.incident.exception.IncidentNotFoundException;
 import com.opsvision.incident.mapper.IncidentMapper;
-import com.opsvision.incident.model.ProbableCause;
-import com.opsvision.incident.model.RootCauseAnalysisResult;
 import com.opsvision.incident.service.IncidentDetectionService;
 import com.opsvision.incident.service.RootCauseAnalysisService;
 import com.opsvision.recovery.mapper.RecoveryMapper;
+import com.opsvision.recovery.model.RecoveryAction;
+import com.opsvision.recovery.model.RecoveryRecommendationResult;
 import com.opsvision.recovery.service.RecoveryRecommendationService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = IncidentController.class)
 @Import({IncidentMapper.class, RecoveryMapper.class, GlobalExceptionHandler.class})
-class IncidentRcaControllerTest {
+class IncidentRecoveryControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -42,36 +42,37 @@ class IncidentRcaControllerTest {
     private RecoveryRecommendationService recoveryRecommendationService;
 
     @Test
-    void rca_returnsRankedCauses() throws Exception {
-        RootCauseAnalysisResult result = new RootCauseAnalysisResult(
+    void recovery_returnsRecommendation() throws Exception {
+        RecoveryRecommendationResult result = new RecoveryRecommendationResult(
                 1L,
                 Instant.parse("2026-08-18T12:00:00Z"),
-                "deterministic-correlation",
-                "summary",
-                List.of(new ProbableCause(
-                        "Recent deployment likely introduced elevated error rate or reduced availability",
-                        0.91,
-                        "DEPLOYMENT_REGRESSION",
-                        List.of("Error rate increased two minutes after deployment")
-                )),
-                List.of()
+                RecoveryAction.ROLLBACK,
+                "Error rate increased after v2; roll back to v1",
+                "v1abc",
+                9L,
+                "v2def",
+                "DEPLOYMENT_REGRESSION",
+                0.91,
+                true,
+                RecoveryRecommendationResult.EXECUTION_MODE_RECOMMENDATION_ONLY,
+                List.of("errors up"),
+                List.of("Recommendation only")
         );
-        when(rootCauseAnalysisService.analyze(1L)).thenReturn(result);
+        when(recoveryRecommendationService.recommend(1L)).thenReturn(result);
 
-        mockMvc.perform(get("/api/v1/incidents/1/rca").accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/api/v1/incidents/1/recovery").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.incidentId").value(1))
-                .andExpect(jsonPath("$.method").value("deterministic-correlation"))
-                .andExpect(jsonPath("$.probableCauses[0].category").value("DEPLOYMENT_REGRESSION"))
-                .andExpect(jsonPath("$.probableCauses[0].confidence").value(0.91))
-                .andExpect(jsonPath("$.probableCauses[0].evidence[0]").exists());
+                .andExpect(jsonPath("$.action").value("ROLLBACK"))
+                .andExpect(jsonPath("$.targetVersion").value("v1abc"))
+                .andExpect(jsonPath("$.requiresHumanApproval").value(true))
+                .andExpect(jsonPath("$.executionMode").value("RECOMMENDATION_ONLY"));
     }
 
     @Test
-    void rca_notFound_returns404() throws Exception {
-        when(rootCauseAnalysisService.analyze(42L)).thenThrow(new IncidentNotFoundException(42L));
+    void recovery_notFound_returns404() throws Exception {
+        when(recoveryRecommendationService.recommend(42L)).thenThrow(new IncidentNotFoundException(42L));
 
-        mockMvc.perform(get("/api/v1/incidents/42/rca").accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/api/v1/incidents/42/recovery").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.title").value("Incident Not Found"));
     }
