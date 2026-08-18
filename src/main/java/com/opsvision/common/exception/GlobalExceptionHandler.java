@@ -1,5 +1,6 @@
 package com.opsvision.common.exception;
 
+import com.opsvision.ai.exception.AiProviderException;
 import com.opsvision.evidence.exception.DeploymentNotFoundException;
 import com.opsvision.evidence.exception.EvidenceIngestionException;
 import com.opsvision.github.exception.GitHubAuthenticationException;
@@ -124,6 +125,15 @@ public class GlobalExceptionHandler {
             HttpServletRequest request
     ) {
         return problem(HttpStatus.BAD_GATEWAY, "GitHub API Error", ex.getMessage(), request, Map.of());
+    }
+
+    @ExceptionHandler(AiProviderException.class)
+    public ResponseEntity<ProblemDetail> handleAiProvider(
+            AiProviderException ex,
+            HttpServletRequest request
+    ) {
+        log.warn("AI provider error on {}: {}", request.getRequestURI(), ex.getMessage());
+        return problem(HttpStatus.BAD_GATEWAY, "AI Provider Error", ex.getMessage(), request, Map.of());
     }
 
     @ExceptionHandler(Exception.class)

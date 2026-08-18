@@ -1,8 +1,10 @@
 package com.opsvision.deployment.controller;
 
+import com.opsvision.ai.service.DeploymentExplanationService;
 import com.opsvision.deployment.dto.AnalyzeDeploymentRequest;
 import com.opsvision.deployment.dto.ConfidenceScoreResponse;
 import com.opsvision.deployment.dto.DeploymentAnalysisResponse;
+import com.opsvision.deployment.dto.DeploymentExplanationResponse;
 import com.opsvision.deployment.dto.DeploymentResponse;
 import com.opsvision.deployment.dto.EvidenceResponse;
 import com.opsvision.deployment.dto.FindingResponse;
@@ -35,9 +37,14 @@ import java.util.List;
 public class DeploymentAnalysisController {
 
     private final DeploymentAnalysisService analysisService;
+    private final DeploymentExplanationService explanationService;
 
-    public DeploymentAnalysisController(DeploymentAnalysisService analysisService) {
+    public DeploymentAnalysisController(
+            DeploymentAnalysisService analysisService,
+            DeploymentExplanationService explanationService
+    ) {
         this.analysisService = analysisService;
+        this.explanationService = explanationService;
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -98,5 +105,11 @@ public class DeploymentAnalysisController {
     @Operation(summary = "Get deployment policy decision")
     public PolicyDecisionResponse getPolicy(@PathVariable("id") Long id) {
         return analysisService.getPolicy(id);
+    }
+
+    @GetMapping("/{id}/explanation")
+    @Operation(summary = "Generate AI deployment risk explanation from score, policy, and evidence (on demand)")
+    public DeploymentExplanationResponse getExplanation(@PathVariable("id") Long id) {
+        return explanationService.explain(id);
     }
 }

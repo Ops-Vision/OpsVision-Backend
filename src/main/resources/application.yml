@@ -73,6 +73,16 @@ opsvision:
     block-on-failed-tests: true
     block-on-failed-workflow: true
     review-on-high-finding: true
+  ai:
+    enabled: ${OPSVISION_AI_ENABLED:false}
+    provider: ${OPSVISION_AI_PROVIDER:none}
+    base-url: ${OPSVISION_AI_BASE_URL:https://api.openai.com/v1}
+    api-key: ${OPSVISION_AI_API_KEY:}
+    model: ${OPSVISION_AI_MODEL:gpt-4o-mini}
+    connect-timeout-ms: ${OPSVISION_AI_CONNECT_TIMEOUT_MS:5000}
+    read-timeout-ms: ${OPSVISION_AI_READ_TIMEOUT_MS:60000}
+    max-tokens: ${OPSVISION_AI_MAX_TOKENS:800}
+    temperature: ${OPSVISION_AI_TEMPERATURE:0.2}
 
 logging:
   level:

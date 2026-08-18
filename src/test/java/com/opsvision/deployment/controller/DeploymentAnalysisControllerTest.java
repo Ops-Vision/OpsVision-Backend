@@ -1,8 +1,11 @@
 package com.opsvision.deployment.controller;
 
+import com.opsvision.ai.exception.AiProviderException;
+import com.opsvision.ai.service.DeploymentExplanationService;
 import com.opsvision.common.exception.GlobalExceptionHandler;
 import com.opsvision.deployment.dto.ConfidenceScoreResponse;
 import com.opsvision.deployment.dto.DeploymentAnalysisResponse;
+import com.opsvision.deployment.dto.DeploymentExplanationResponse;
 import com.opsvision.deployment.dto.DeploymentResponse;
 import com.opsvision.deployment.dto.PolicyDecisionResponse;
 import com.opsvision.deployment.dto.RepositorySummaryDto;
@@ -41,6 +44,9 @@ class DeploymentAnalysisControllerTest {
 
     @MockBean
     private DeploymentAnalysisService analysisService;
+
+    @MockBean
+    private DeploymentExplanationService explanationService;
 
     @Test
     void analyzeReturnsCreatedWithScoreAndPolicy() throws Exception {
@@ -114,6 +120,38 @@ class DeploymentAnalysisControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].id").value(2))
                 .andExpect(jsonPath("$.totalElements").value(1));
+    }
+
+    @Test
+    void getExplanationReturnsBody() throws Exception {
+        when(explanationService.explain(eq(8L))).thenReturn(
+                new DeploymentExplanationResponse(
+                        8L,
+                        "Summary text",
+                        List.of("concern-a"),
+                        List.of("fix-a"),
+                        "mock",
+                        "m1",
+                        true
+                )
+        );
+
+        mockMvc.perform(get("/api/v1/deployments/8/explanation"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.deploymentId").value(8))
+                .andExpect(jsonPath("$.summary").value("Summary text"))
+                .andExpect(jsonPath("$.available").value(true))
+                .andExpect(jsonPath("$.concerns[0]").value("concern-a"));
+    }
+
+    @Test
+    void getExplanationAiFailureReturns502() throws Exception {
+        when(explanationService.explain(eq(8L))).thenThrow(new AiProviderException("LLM down"));
+
+        mockMvc.perform(get("/api/v1/deployments/8/explanation"))
+                .andExpect(status().isBadGateway())
+                .andExpect(jsonPath("$.title").value("AI Provider Error"))
+                .andExpect(jsonPath("$.detail").value("LLM down"));
     }
 
     @Test
