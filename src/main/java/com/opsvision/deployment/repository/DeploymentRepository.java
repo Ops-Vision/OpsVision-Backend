@@ -2,6 +2,8 @@ package com.opsvision.deployment.repository;
 
 import com.opsvision.deployment.entity.Deployment;
 import com.opsvision.deployment.model.DeploymentStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,6 +22,15 @@ public interface DeploymentRepository extends JpaRepository<Deployment, Long> {
     List<Deployment> findByRepositoryIdOrderByCreatedAtDesc(Long repositoryId);
 
     List<Deployment> findByStatusOrderByCreatedAtDesc(DeploymentStatus status);
+
+    Page<Deployment> findAllByOrderByCreatedAtDesc(Pageable pageable);
+
+    @Query("""
+            select d from Deployment d
+            join fetch d.repository
+            where d.id = :id
+            """)
+    Optional<Deployment> findByIdWithRepository(@Param("id") Long id);
 
     @Query("""
             select d from Deployment d
