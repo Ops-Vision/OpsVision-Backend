@@ -47,6 +47,17 @@ opsvision:
     api-base-url: ${GITHUB_API_BASE_URL:https://api.github.com}
     connect-timeout-ms: ${GITHUB_CONNECT_TIMEOUT_MS:5000}
     read-timeout-ms: ${GITHUB_READ_TIMEOUT_MS:15000}
+  scoring:
+    # Factor maxima (defaults sum to 100)
+    build-max: 20
+    tests-max: 20
+    coverage-max: 15
+    static-analysis-max: 15
+    security-max: 25
+    workflow-max: 5
+    coverage-full-threshold: 80.0
+    coverage-zero-threshold: 40.0
+    missing-evidence-credit: 0.0
 
 logging:
   level:
