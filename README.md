@@ -22,7 +22,7 @@ Deterministic pipelines drive scores, policy, incidents, RCA, and recovery. Opti
 - **Docker** (optional): PostgreSQL via Compose, or full backend image
 - Optional for live demos:
   - GitHub personal access token (repo + issues)
-  - OpenAI-compatible API (explanations only)
+  - Ollama (preferred local LLM) or OpenAI-compatible API (explanations only)
   - Kubernetes API + Prometheus (live telemetry)
 
 ---
@@ -43,8 +43,9 @@ cp .env.example .env
 | `GITHUB_API_TOKEN` | GitHub REST API | empty |
 | `GITHUB_OWNER` / `GITHUB_REPOSITORY` | Default repo context | empty |
 | `OPSVISION_AI_ENABLED` | Enable LLM client | `false` |
-| `OPSVISION_AI_PROVIDER` | `none` or `openai-compatible` | `none` |
-| `OPSVISION_AI_BASE_URL` / `OPSVISION_AI_API_KEY` / `OPSVISION_AI_MODEL` | LLM endpoint | see `.env.example` |
+| `OPSVISION_AI_PROVIDER` | `none`, `ollama`, or `openai-compatible` | `none` |
+| `OPSVISION_OLLAMA_BASE_URL` / `OPSVISION_OLLAMA_MODEL` | Native Ollama (`/api/chat`) | `http://localhost:11434` / `llama3.2` |
+| `OPSVISION_AI_BASE_URL` / `OPSVISION_AI_API_KEY` / `OPSVISION_AI_MODEL` | OpenAI-compatible endpoint | see `.env.example` |
 | `OPSVISION_OBSERVABILITY_ENABLED` | Live K8s/Prom collection | `false` |
 | `OPSVISION_K8S_*` / `OPSVISION_PROMETHEUS_*` | Telemetry clients | see `.env.example` |
 | `OPSVISION_INCIDENT_*` | Detection thresholds | see `application.yml` |

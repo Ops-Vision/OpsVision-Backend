@@ -70,6 +70,18 @@ curl -s http://localhost:8080/api/v1/deployments/$DEPLOYMENT_ID/explanation
 
 With `OPSVISION_AI_ENABLED=false` (default), explanation still returns structured text from score/policy/findings (no invented CVEs).
 
+**Optional — Ollama explanations (demo LLM):**
+
+```bash
+# Terminal: ollama serve && ollama pull llama3.2
+export OPSVISION_AI_ENABLED=true
+export OPSVISION_AI_PROVIDER=ollama
+export OPSVISION_OLLAMA_BASE_URL=http://localhost:11434
+export OPSVISION_OLLAMA_MODEL=llama3.2
+```
+
+Then restart the backend and call `GET .../explanation` again — `provider` should be `ollama`.
+
 ---
 
 ### 2. Risky deployment → BLOCK

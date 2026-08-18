@@ -92,6 +92,7 @@ opsvision:
     review-on-high-finding: true
   ai:
     enabled: ${OPSVISION_AI_ENABLED:false}
+    # none | ollama | openai-compatible
     provider: ${OPSVISION_AI_PROVIDER:none}
     base-url: ${OPSVISION_AI_BASE_URL:https://api.openai.com/v1}
     api-key: ${OPSVISION_AI_API_KEY:}
@@ -100,6 +101,9 @@ opsvision:
     read-timeout-ms: ${OPSVISION_AI_READ_TIMEOUT_MS:60000}
     max-tokens: ${OPSVISION_AI_MAX_TOKENS:800}
     temperature: ${OPSVISION_AI_TEMPERATURE:0.2}
+    ollama:
+      base-url: ${OPSVISION_OLLAMA_BASE_URL:http://localhost:11434}
+      model: ${OPSVISION_OLLAMA_MODEL:llama3.2}
   observability:
     enabled: ${OPSVISION_OBSERVABILITY_ENABLED:false}
     kubernetes:
