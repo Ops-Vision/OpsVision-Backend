@@ -20,11 +20,15 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import java.net.URI;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Centralized RFC 9457 Problem Detail responses for REST APIs.
@@ -107,6 +111,45 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ProblemDetail> handleConstraintViolation(
+            ConstraintViolationException ex,
+            HttpServletRequest request
+    ) {
+        Map<String, String> errors = ex.getConstraintViolations().stream()
+                .collect(Collectors.toMap(
+                        this::violationPath,
+                        v -> v.getMessage() != null ? v.getMessage() : "invalid",
+                        (a, b) -> a,
+                        LinkedHashMap::new
+                ));
+        ProblemDetail detail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                "Request validation failed"
+        );
+        detail.setTitle("Validation Failed");
+        detail.setType(URI.create("about:blank"));
+        detail.setProperty("timestamp", Instant.now().toString());
+        detail.setProperty("path", request.getRequestURI());
+        detail.setProperty("errors", errors);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(detail);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ProblemDetail> handleTypeMismatch(
+            MethodArgumentTypeMismatchException ex,
+            HttpServletRequest request
+    ) {
+        String name = ex.getName() != null ? ex.getName() : "parameter";
+        return problem(
+                HttpStatus.BAD_REQUEST,
+                "Invalid Parameter",
+                "Parameter '" + name + "' has an invalid value",
+                request,
+                Map.of("parameter", name)
+        );
+    }
+
     @ExceptionHandler(GitHubAuthenticationException.class)
     public ResponseEntity<ProblemDetail> handleGitHubAuth(
             GitHubAuthenticationException ex,
@@ -167,6 +210,14 @@ public class GlobalExceptionHandler {
                 request,
                 Map.of()
         );
+    }
+
+    private String violationPath(ConstraintViolation<?> violation) {
+        if (violation.getPropertyPath() == null) {
+            return "request";
+        }
+        String path = violation.getPropertyPath().toString();
+        return path.isBlank() ? "request" : path;
     }
 
     private static ResponseEntity<ProblemDetail> problem(
