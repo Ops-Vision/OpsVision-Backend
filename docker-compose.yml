@@ -1,11 +1,35 @@
-# Local demo stack: Postgres (+ optional backend).
+# Local demo stack: Postgres + backend (+ optional Ollama).
 # Usage:
-#   docker compose up -d postgres
+#   docker compose up -d --build          # full stack (DB + backend)
+#   docker compose up -d postgres ollama  # DB + Ollama (run backend with mvn)
 #   mvn spring-boot:run
-# Full stack:
-#   docker compose up -d --build
+# Ollama: http://localhost:11434  — pull model: docker compose exec ollama ollama pull llama3.2
 
 services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: opsvision-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - opsvision_ollama_data:/root/.ollama
+    networks:
+      - opsvision
+    # Uncomment if you have an NVIDIA GPU + Container Toolkit:
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+      start_period: 20s
+
   postgres:
     image: postgres:16-alpine
     container_name: opsvision-postgres
@@ -14,9 +38,12 @@ services:
       POSTGRES_USER: opsvision
       POSTGRES_PASSWORD: opsvision
     ports:
-      - "5432:5432"
+      # Host 5433 avoids clashing with a local PostgreSQL on 5432
+      - "5433:5432"
     volumes:
       - opsvision_pg_data:/var/lib/postgresql/data
+    networks:
+      - opsvision
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U opsvision -d opsvision"]
       interval: 5s
@@ -30,9 +57,13 @@ services:
       postgres:
         condition: service_healthy
     ports:
-      - "8080:8080"
+      # Host 8082 avoids clashing with other apps on 8080
+      - "8082:8080"
+    networks:
+      - opsvision
     environment:
       SERVER_PORT: "8080"
+      # Service DNS name "postgres" on the compose network (not localhost)
       DB_URL: jdbc:postgresql://postgres:5432/opsvision
       DB_USERNAME: opsvision
       DB_PASSWORD: opsvision
@@ -40,16 +71,20 @@ services:
       GITHUB_API_TOKEN: ${GITHUB_API_TOKEN:-}
       GITHUB_OWNER: ${GITHUB_OWNER:-}
       GITHUB_REPOSITORY: ${GITHUB_REPOSITORY:-}
-      OPSVISION_AI_ENABLED: ${OPSVISION_AI_ENABLED:-false}
-      OPSVISION_AI_PROVIDER: ${OPSVISION_AI_PROVIDER:-none}
-      OPSVISION_OLLAMA_BASE_URL: ${OPSVISION_OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      OPSVISION_AI_ENABLED: ${OPSVISION_AI_ENABLED:-true}
+      OPSVISION_AI_PROVIDER: ${OPSVISION_AI_PROVIDER:-ollama}
+      # Always use Compose service DNS (do not inherit localhost from host .env)
+      OPSVISION_OLLAMA_BASE_URL: http://ollama:11434
       OPSVISION_OLLAMA_MODEL: ${OPSVISION_OLLAMA_MODEL:-llama3.2}
       OPSVISION_AI_BASE_URL: ${OPSVISION_AI_BASE_URL:-https://api.openai.com/v1}
       OPSVISION_AI_API_KEY: ${OPSVISION_AI_API_KEY:-}
       OPSVISION_AI_MODEL: ${OPSVISION_AI_MODEL:-gpt-4o-mini}
       OPSVISION_OBSERVABILITY_ENABLED: ${OPSVISION_OBSERVABILITY_ENABLED:-false}
-    profiles:
-      - full
+
+networks:
+  opsvision:
+    name: opsvision-net
 
 volumes:
   opsvision_pg_data:
+  opsvision_ollama_data:

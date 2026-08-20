@@ -20,32 +20,49 @@ POST /api/v1/incidents/detect
 RCA → recovery recommendation → postmortem draft → GitHub issue
 ```
 
-Base URL: `http://localhost:8080`
+Base URL:
+
+- **Full Docker stack:** `http://localhost:8082`
+- **Maven on host:** `http://localhost:8080` (default `SERVER_PORT`)
+
+Examples below use `$BASE` — set it once.
 
 ---
 
 ### 0. Start services
 
+**Full stack (recommended when host 8080/5432 are busy):**
+
+```bash
+docker compose up -d --build
+export BASE=http://localhost:8082   # PowerShell: $env:BASE="http://localhost:8082"
+```
+
+**DB in Docker + app on host:**
+
 ```bash
 docker compose up -d postgres
+# JDBC must use host port 5433
+export DB_URL=jdbc:postgresql://localhost:5433/opsvision
 mvn spring-boot:run
+export BASE=http://localhost:8080
 ```
 
 Confirm:
 
 ```bash
-curl -s http://localhost:8080/
-curl -s http://localhost:8080/actuator/health
+curl -s $BASE/
+curl -s $BASE/actuator/health
 ```
 
-Open Swagger UI: http://localhost:8080/swagger-ui.html
+Open Swagger UI: `$BASE/swagger-ui.html`
 
 ---
 
 ### 1. Ideal deployment → DEPLOY
 
 ```bash
-curl -s -X POST http://localhost:8080/api/v1/deployments \
+curl -s -X POST $BASE/api/v1/deployments \
   -H "Content-Type: application/json" \
   -d @docs/demo/analyze-ideal.json
 ```
@@ -62,10 +79,10 @@ Save the returned `deployment.id` as `DEPLOYMENT_ID`.
 Follow-ups:
 
 ```bash
-curl -s http://localhost:8080/api/v1/deployments/$DEPLOYMENT_ID/score
-curl -s http://localhost:8080/api/v1/deployments/$DEPLOYMENT_ID/policy
-curl -s http://localhost:8080/api/v1/deployments/$DEPLOYMENT_ID/evidence
-curl -s http://localhost:8080/api/v1/deployments/$DEPLOYMENT_ID/explanation
+curl -s $BASE/api/v1/deployments/$DEPLOYMENT_ID/score
+curl -s $BASE/api/v1/deployments/$DEPLOYMENT_ID/policy
+curl -s $BASE/api/v1/deployments/$DEPLOYMENT_ID/evidence
+curl -s $BASE/api/v1/deployments/$DEPLOYMENT_ID/explanation
 ```
 
 With `OPSVISION_AI_ENABLED=false` (default), explanation still returns structured text from score/policy/findings (no invented CVEs).
@@ -87,7 +104,7 @@ Then restart the backend and call `GET .../explanation` again — `provider` sho
 ### 2. Risky deployment → BLOCK
 
 ```bash
-curl -s -X POST http://localhost:8080/api/v1/deployments \
+curl -s -X POST $BASE/api/v1/deployments \
   -H "Content-Type: application/json" \
   -d @docs/demo/analyze-block.json
 ```
@@ -107,7 +124,7 @@ This shows **critical security + failed CI override** score bands.
 Requires `OPSVISION_OBSERVABILITY_ENABLED=true` and reachable K8s/Prometheus endpoints (see `.env.example`).
 
 ```bash
-curl -s "http://localhost:8080/api/v1/observability/telemetry?namespace=default&workload=api"
+curl -s "$BASE/api/v1/observability/telemetry?namespace=default&workload=api"
 ```
 
 If disabled or clients fail, the API still responds with partial snapshot metadata and collection notes (non-fatal).
@@ -119,7 +136,7 @@ If disabled or clients fail, the API still responds with partial snapshot metada
 #### 4a. Live path (cluster + metrics unhealthy)
 
 ```bash
-curl -s -X POST "http://localhost:8080/api/v1/incidents/detect?deploymentId=$DEPLOYMENT_ID&namespace=prod&workload=api"
+curl -s -X POST "$BASE/api/v1/incidents/detect?deploymentId=$DEPLOYMENT_ID&namespace=prod&workload=api"
 ```
 
 If signals cross thresholds: response contains an incident with timeline entries.
@@ -137,10 +154,10 @@ These inject synthetic unhealthy telemetry and assert RCA, recovery ≠ `NO_ACTI
 #### 4c. Once you have `INCIDENT_ID`
 
 ```bash
-curl -s http://localhost:8080/api/v1/incidents/$INCIDENT_ID
-curl -s http://localhost:8080/api/v1/incidents/$INCIDENT_ID/rca
-curl -s http://localhost:8080/api/v1/incidents/$INCIDENT_ID/recovery
-curl -s http://localhost:8080/api/v1/incidents/$INCIDENT_ID/postmortem
+curl -s $BASE/api/v1/incidents/$INCIDENT_ID
+curl -s $BASE/api/v1/incidents/$INCIDENT_ID/rca
+curl -s $BASE/api/v1/incidents/$INCIDENT_ID/recovery
+curl -s $BASE/api/v1/incidents/$INCIDENT_ID/postmortem
 ```
 
 **Recovery is recommendation-only** — no automatic rollback/scale.
@@ -153,7 +170,7 @@ Postmortem drafts are built from **structured** incident + RCA + recovery data (
 
 ```bash
 # Requires GITHUB_API_TOKEN, GITHUB_OWNER, GITHUB_REPOSITORY
-curl -s -X POST http://localhost:8080/api/v1/incidents/$INCIDENT_ID/github-issue
+curl -s -X POST $BASE/api/v1/incidents/$INCIDENT_ID/github-issue
 ```
 
 Idempotent: repeat calls return the same issue linkage (no duplicate spam).

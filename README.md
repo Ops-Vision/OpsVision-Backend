@@ -62,7 +62,14 @@ Scoring weights and policy bands are centralized under `opsvision.scoring` and `
 docker compose up -d postgres
 ```
 
-Creates database/user `opsvision` / `opsvision` on port **5432**.
+Creates database/user `opsvision` / `opsvision`. Postgres is published on host port **5433** (`localhost:5433` → container `5432`) so it does not clash with a local PostgreSQL on **5432**.
+
+For `mvn spring-boot:run` against Compose Postgres:
+
+```bash
+# PowerShell
+$env:DB_URL="jdbc:postgresql://localhost:5433/opsvision"
+```
 
 **Option B — local install**
 
@@ -93,19 +100,29 @@ mvn -DskipTests package
 java -jar target/opsvision-backend-0.0.1-SNAPSHOT.jar
 ```
 
-**Docker image** (expects Postgres hostname `postgres` by default):
+**Docker Compose full stack** (Postgres + backend; backend waits until DB is healthy):
 
 ```bash
-docker compose up -d
-# or: docker build -t opsvision-backend . && docker run --env-file .env -p 8080:8080 opsvision-backend
+docker compose up -d --build
 ```
 
-Smoke check:
+- API on host **http://localhost:8082** (maps to container `8080` — avoids other apps on 8080)
+- Inside Compose, JDBC uses service DNS: `jdbc:postgresql://postgres:5432/opsvision`
+- Explicit network: `opsvision-net`
+
+Smoke check (full stack):
+
+```bash
+curl -s http://localhost:8082/
+# OpsVision Backend OK
+
+curl -s http://localhost:8082/actuator/health
+```
+
+With `mvn spring-boot:run` on a free host port 8080:
 
 ```bash
 curl -s http://localhost:8080/
-# OpsVision Backend OK
-
 curl -s http://localhost:8080/actuator/health
 ```
 
