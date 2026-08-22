@@ -47,7 +47,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,prometheus
   endpoint:
     health:
       show-details: when_authorized
@@ -105,7 +105,7 @@ opsvision:
       base-url: ${OPSVISION_OLLAMA_BASE_URL:http://localhost:11434}
       model: ${OPSVISION_OLLAMA_MODEL:llama3.2}
   observability:
-    enabled: ${OPSVISION_OBSERVABILITY_ENABLED:false}
+    enabled: ${OPSVISION_OBSERVABILITY_ENABLED:true}
     kubernetes:
       enabled: ${OPSVISION_K8S_ENABLED:true}
       api-base-url: ${OPSVISION_K8S_API_BASE_URL:https://kubernetes.default.svc}

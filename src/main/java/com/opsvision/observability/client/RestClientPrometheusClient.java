@@ -7,7 +7,6 @@ import com.opsvision.observability.model.MetricSample;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -48,15 +47,13 @@ public class RestClientPrometheusClient implements PrometheusClient {
             return List.of();
         }
         try {
-            String uri = UriComponentsBuilder
-                    .fromPath("/api/v1/query")
-                    .queryParam("query", promQl)
-                    .build()
-                    .encode()
-                    .toUriString();
-
+            // Expand the PromQL as a URI-template variable so it is encoded
+            // exactly once. Pre-encoding via UriComponentsBuilder and passing
+            // the already-encoded string to .uri(String) caused double
+            // encoding (%7B -> %257B), which made Prometheus reject every
+            // selector query with HTTP 400 bad_data parse errors.
             String raw = restClient.get()
-                    .uri(uri)
+                    .uri("/api/v1/query?query={query}", promQl)
                     .retrieve()
                     .body(String.class);
 
