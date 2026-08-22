@@ -3,6 +3,9 @@ on: [push, pull_request]
 
 jobs:
   trivy:
+    permissions:
+      security-events: write
+      contents: read
     # Reference the reusable workflow in the OpsVision-Infrastructure repo in this org.
     # Use a released tag (recommended) like @v1 or use @main. Do NOT pass a secret named GITHUB_TOKEN.
     # Example: uses: Ops-Vision/OpsVision-Infrastructure/.github/workflows/trivy-scan-reusable.yml@v1
